@@ -1,0 +1,26 @@
+services:
+  pg:
+    image: postgres:18.0
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - test_volume:/var/lib/postgresql
+
+  redis:
+    image: redis:7
+    ports:
+      - ${REDIS_PORT}:6379
+    command: redis-server --save 60 1 --loglevel warning
+
+volumes:
+  test_volume: {}
